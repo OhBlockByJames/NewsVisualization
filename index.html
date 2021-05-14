@@ -8,9 +8,30 @@
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
 <!-- Create a div where the graph will take place -->
-<div id="my_dataviz"></div>
+<div id ="test"></div>
 
-<!-- A bit of CSS: change stroke color of circle on hover (white -> black) -->
+<div id="my_dataviz"></div>
+<div class="content">
+<a href="https://www.iwa-network.org/wp-content/uploads/2016/06/International-Statistics-for-Water-Services-2014.pdf">資料來源:IWA</a>
+<a href="https://www.worldometers.info/water/">資料來源:Global Water Use</a>
+<p>圖片名稱:各國水費負擔率散佈圖</p>
+<p>原圖(見下方)</p>
+<img src="https://image-resizer.cwg.tw/resize/uri/https%3A%2F%2Fstorage.googleapis.com%2Fwww-cw-com-tw%2Fckeditor%2F202103%2Fckeditor-605deeac2bee2.jpg/?w=1600&format=webp" width="600" height="400">
+<p>說明:<br>
+本圖的X軸為人均GDP，Y軸為平均水價(配合原圖呈現，以新台幣為計價單位)，圓圈大小為各國每人每日用水量進行繪製。<br>
+相較於原本長條圖，散佈圖能:
+<br>
+(1)以一張圖完整呈現所有資料(長條圖繪製多筆資料時Y軸會太長，只能擷取部分)
+<br>
+(2)使用者能大略用方位區分資料，以台灣為例，使用者能發現其落在圖表的中間下方，
+<br>
+使用者能看出台灣水費負擔率極低(比起其他低水費地區，人均GDP高出1-2倍)。<br>
+原新聞報導僅以太便宜作為內容描述，而散佈圖能圖像化具體呈現台灣的水費負擔率低的原因。
+<br>
+(3)散佈圖能呈現額外資訊(每人每日用水量)，搭配這項資訊，使用者能看出美洲國家用水量較大，而非洲較少。
+
+</p>
+</div>
 <style>
 .bubbles {
   stroke-width: 1px;
@@ -38,7 +59,7 @@ d3.csv("https://raw.githubusercontent.com/OhBlockByJames/NewsVisualization/main/
     .range([ 0, width ]);
   svg.append("g")
     .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).ticks(3));
+    .call(d3.axisBottom(x).ticks(6));
   // Add X axis label:
   svg.append("text")
       .attr("text-anchor", "end")
@@ -61,7 +82,7 @@ d3.csv("https://raw.githubusercontent.com/OhBlockByJames/NewsVisualization/main/
   // Add a scale for bubble size
   var z = d3.scaleSqrt()
     .domain([50, 6000])
-    .range([ 2, 30]);
+    .range([ 2, 20]);
   // Add a scale for bubble color
   var myColor = d3.scaleOrdinal()
     .domain(["Asia", "Europe", "Americas", "Africa", "Oceania"])
@@ -80,7 +101,7 @@ d3.csv("https://raw.githubusercontent.com/OhBlockByJames/NewsVisualization/main/
       .duration(200)
     tooltip
       .style("opacity", 1)
-      .html("Country: " + d.country+" 水費負擔率: " + d.afford)
+      .html("Country: " + d.country+" 平均水價: "+d.avgcost+"元 水費負擔率: " + d.afford)
       .style("left", (d3.mouse(this)[0]+30) + "px")
       .style("top", (d3.mouse(this)[1]+30) + "px")
   }
@@ -114,7 +135,6 @@ d3.csv("https://raw.githubusercontent.com/OhBlockByJames/NewsVisualization/main/
       .attr("cy", function (d) { return y(d.avgcost); } )
       .attr("r", function (d) { return z(d.avgused); } )
       .style("fill", function (d) { return myColor(d.continent); } )
-    // -3- Trigger the functions for hover
     .on("mouseover", showTooltip )
     .on("mousemove", moveTooltip )
     .on("mouseleave", hideTooltip )
@@ -158,12 +178,13 @@ d3.csv("https://raw.githubusercontent.com/OhBlockByJames/NewsVisualization/main/
       .text("每人每日用水量")
       .attr("text-anchor", "middle")
     var size = 20
-    var allgroups = ["亞洲", "歐洲", "美洲", "非洲", "大洋洲"]
+    var allgroups = ["Asia", "Europe", "Americas", "Africa", "Oceania"]
     svg.selectAll("myrect")
       .data(allgroups)
       .enter()
       .append("circle")
-        .attr("cx", 390)
+        //.attr("cx", 390)
+        .attr("cx", 375)
         .attr("cy", function(d,i){ return 10 + i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
         .attr("r", 7)
         .style("fill", function(d){ return myColor(d)})
@@ -174,8 +195,8 @@ d3.csv("https://raw.githubusercontent.com/OhBlockByJames/NewsVisualization/main/
       .data(allgroups)
       .enter()
       .append("text")
-        .attr("x", 390 + size*.8)
-        .attr("y", function(d,i){ return i * (size + 5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+        .attr("x", 375 + size*.8)
+        .attr("y", function(d,i){ return i * (size + 5) + (size/2)})
         .style("fill", function(d){ return myColor(d)})
         .text(function(d){ return d})
         .attr("text-anchor", "left")
